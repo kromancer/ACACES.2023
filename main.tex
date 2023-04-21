@@ -2,9 +2,7 @@
 
 \begin{document}
 
-\title{ACACES\\
-Using the style file
-}
+\title{Using DCE for slicing applications with irregular memory accesses}
 
 \pagestyle{empty}
 
@@ -26,11 +24,54 @@ Using the style file
 \item scientific contribution of the paper
 \end{enumerate}
 
+Irregular memory accesses pose a significant challenge in applications within graph analytics, database management systems, and sparse linear algebra.
+These applications often experience high execution times due to frequent stalls caused by long latency DRAM accesses.
+A memory access pattern is considered irregular if the processor is unable to predict and \textbf{prefetch} it effectively.
+
+Prefetching is a latency avoidance technique that aims to bring useful data closer to the processor before it is requested.
+Modern processors are equipped with dedicated \textbf{hardware} prefetchers that operate transparently, without requiring any software intervention.
+These prefetchers are efficient for applications with regular access patterns, such as traversing a dense matrix.
+However, they struggle with indirect memory accesses, like those encountered when traversing a linked list.
+
+In addition to dedicated hardware, processors also provide specialized prefetching instructions.
+\textbf{Software} engineers can utilize these instructions to explicitly request data prefetches, leveraging their knowledge of the application and its data structures.
+Nonetheless, this approach requires significant effort and a thorough understanding of the processor's microarchitecture.
+Moreover, there are currently no compiler optimizations that automatically insert prefetch instructions.
+
+Recently, the research community has proposed several prefetching solutions specifically designed for irregular workloads.
+The application of machine learning techniques can improve the predictive capabilities of hardware prefetchers when handling irregular memory access patterns.
+However, this improvement comes at the cost of added hardware complexity.
+Furthermore, due to their speculative nature, these techniques may not be fully \textbf{accurate}, fetching irrelevant data alongside useful information,
+leading to wasted resources such as energy.
+
+To enhance accuracy, another class of proposals aims to add some programmability to hardware prefetchers.
+However, this class of prefetchers has limited \textbf{applicability},
+as their constrained programming model is only able to cover certain representations of sparse data structures.
+Moreover, programming these prefetchers necessitates the use of a different programming language from the one used to express the application,
+creating a learning barrier that hinders the wider adoption of such proposals.
+
+The primary \textbf{goal} of this study is to propose an accurate prefetching scheme with broader applicability.
+Rather than relying on additional prefetching hardware, our solution aims to increase the utilization of existing idle resources.
+The most important of these resources is the capacity of modern processors for Memory Level Parallelism (MLP),
+which refers to their ability to have multiple concurrent memory requests "in-flight".
+
+At the core of our implementation is a transformation of the application into a pipeline.
+This transformation is made feasible by repurposing a well-established compiler optimization technique called Dead Code Elimination (DCE).
+In traditional \textbf{DCE}, the compiler slices an application into dead (redundant) and live (essential) code, then discards the redundant portion.
+In our approach, the compiler uses the re-purposed DCE to slice the application into memory and compute slices.
+The memory slices contain the essential code needed to formulate the irregular memory accesses.
+These memory slices are placed in the early stages of the pipeline, designed to maximize MLP as soon as possible.
+
+Our proposal is designed to be user-friendly, as the burden of transformation is handled by the compiler, with only minimal code annotations required from the programmer.
+Moreover, the accuracy and applicability of our technique are assured, as the memory slices are derived directly from the application itself,
+ensuring that prefetching matches the actual memory access pattern of the application..
+
+We evaluate our approach using four representative kernels: Breadth First Search, PageRank, Hash Join, and Sparse Matrix-Matrix Multiplication.
+Our \textbf{results} demonstrate a significant improvement, with a 50\% decrease in execution time compared to commercially available alternatives.
 
 \section{Background}
 
 1/2 page
-
 
 \section{The "new stuff"} 
 
