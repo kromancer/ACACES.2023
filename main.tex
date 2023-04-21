@@ -62,7 +62,8 @@ In our approach, the compiler uses the re-purposed DCE to slice the application 
 The memory slices contain the essential code needed to formulate the irregular memory accesses.
 These memory slices are placed in the early stages of the pipeline, designed to maximize MLP as soon as possible.
 
-Our proposal is designed to be user-friendly, as the burden of transformation is handled by the compiler, with only minimal code annotations required from the programmer.
+Our proposal is designed to minimize programmer effort,
+as the burden of transformation is handled by the compiler, requiring only minimal code annotations from the programmer.
 Moreover, the accuracy and applicability of our technique are assured, as the memory slices are derived directly from the application itself,
 ensuring that prefetching matches the actual memory access pattern of the application..
 
