@@ -1,0 +1,108 @@
+
+\documentclass{acaces}
+
+\begin{document}
+
+
+\title{ACACES\\
+Using the style file
+}
+
+\author{
+Michiel~Ronsse\addressnum{1},
+Other~Author\addressnum{1}\comma\extranum{1},
+Yet~Another~Author\addressnum{2},
+The~Last~Author\addressnum{1},\extranum{2}
+}
+
+\address{1}{
+ELIS,
+Ghent University,
+Sint-Pietersnieuwstraat 41,
+9000 Gent,
+Belgium
+}
+
+\address{2}{
+ELIS,
+UGent,
+9000 Gent,
+Belgium
+}
+
+\extra{1}{E-mail: \{ronsse,oauthor,yaauthor,tlauthor\}@elis.UGent.be}
+\extra{2}{This author wishes to thank nobody.}
+
+\pagestyle{empty}
+
+
+\begin{abstract}
+This document describes the usage of the \LaTeX{} style provided
+for the ACACES poster session.
+\end{abstract}
+
+\keywords{ACACES; poster session; \LaTeX}
+
+\section{Introduction}
+This document ({\tt guide.pdf}) describes {\tt acaces.cls}, the
+\LaTeX~\cite{latex} style file to be used for the abstract of your 
+\href{http://www.hipeac.net/acaces2006/}{ACACES} poster. The document
+you are reading right now was also produced with that style file.
+You are strongly advised to use \LaTeX{} for preparing your camera-ready paper.
+If this is impossible, please try to mimic the layout of this document as
+closely as possible. Word users can use the {\tt
+ACACEStemplate.doc} template.
+
+The remainder of this document assumes you use \LaTeX{} with the
+{\tt acaces.cls} style file.
+
+Using the style file is pretty straightforward, just have a look to the source of this file 
+({\tt guide.tex}).
+
+
+\section{Typesetter}
+
+Use {\tt pdflatex guide.tex} to generate a PDF file, don't use {\tt latex} to
+produce a dvi file and then {\tt dvipdf} or {\tt dvips} followed by {\tt
+ps2pdf} or {\tt pdftopdf} as this results in ugly looking PDF.
+
+\section{Figures} 
+Your figures should also be made in PDF. Unfortunately, not a
+lot of drawing applications allow you to write a PDF file. You can however
+create EPS files and transform the resulting files to PDF using {\tt epstopdf
+figure.eps}. Figure~\ref{logo} shows an example of a figure.
+Please bear in mind that your paper will be reduced to 70\% of its
+original size.
+
+
+\begin{figure}
+\centering
+\includegraphics{hipeac-logo-bw}
+\caption{An example of a Figure: the HiPEAC logo.}
+\label{logo}
+\end{figure}
+
+
+\section{Fonts}
+Please make sure that your PDF file only contains Type1 fonts. This should be
+no problem if you use pdflatex and the {\tt acaces.cls} style file. If you use
+another typesetting system, please check if the resulting PDF file only uses
+Type1 fonts.  You can check this using Acrobat Reader: open your file and
+check all fonts using File$\rightarrow$Document Properties$\rightarrow$Fonts\ldots
+
+\section{Final submission}
+Make sure that your PDF file does not contain page numbers, is
+up to 4 pages long and is formatted for an A4 page.
+Upload the final version before June 8 on the website.
+
+\section{About this style}
+You are encouraged to send bug reports, remarks, \ldots about this style to
+\href{mailto:ronsse@elis.UGent.be}{ronsse@elis.UGent.be}.
+
+\section{End}
+This is the end! \label{end}
+
+\bibliography{guide}
+
+\end{document}
+
