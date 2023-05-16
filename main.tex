@@ -1,13 +1,39 @@
 \documentclass{acaces}
 
+\usepackage{minted}
+
 \begin{document}
 
-\title{Using DCE for slicing applications with irregular memory accesses}
+\title{DPREF: Using Dead Code Elimination for Prefetching Irregular Memory Accesses}
+
+\author{
+Konstantinos~Sotiropoulos\addressnum{1},\extranum{1},
+Jonas~Skeppstedt\addressnum{2},\extranum{2},
+Angelos~Arelakis\addressnum{3},\extranum{3},
+Per~Stenström\addressnum{1},\extranum{1}
+}
+
+\address{1}{
+  Chalmers University of Technology
+}
+
+\address{2}{
+  Lund University
+}
+
+\address{3}{
+  ZeroPoint Technologies
+}
+
+\extra{1}{\{konstantinos.sotirpoulos,per.stenstrom\}@chalmers.se}
+\extra{2}{jonas.skeppstedt@cs.lth.se}
+\extra{3}{angelos.arelakis@zptcorp.com}
 
 \pagestyle{empty}
 
 \begin{abstract}
-
+  A single paragraph, distilled from the introduction.
+  Mention that this is a work in progress.
 \end{abstract}
 
 \keywords{irregular applications; prefetching; pipelined parallelism; DCE}
@@ -16,64 +42,82 @@
 
 Irregular memory accesses pose a significant challenge in applications within graph analytics, database management systems, and sparse linear algebra.
 These applications experience high execution times due to frequent stalls caused by long latency DRAM accesses.
-
 Prefetching is a latency avoidance technique that aims to bring useful data closer to the processor before it is requested.
-Programmers, leveraging their knowledge of the application, can utilize specialized instructions to explicitly request data prefetches.
-However, this approach requires significant effort and a thorough understanding of the processor's microarchitecture.
-It may also lead to non-portable code.
 
-In addition to prefetching instructions, modern processors are also equipped with dedicated hardware prefetchers.
-A hardware prefetcher predicts future accesses and does so transparently, without requiring any software intervention.
+Processors are equipped with dedicated hardware prefetchers that predict future accesses and do so transparently, without requiring any software intervention.
 These prefetchers are efficient for applications with regular access patterns, such as iterating over a dense matrix.
 Nonetheless, they struggle with indirect memory accesses, like those encountered when traversing a sparse graph.
 
 There have been several proposals to improve the predictive capabilities of hardware prefetchers e.g. with the application of machine learning \cite{bera_pythia_2021}.
-However, due to their speculative nature, these techniques can not be accurate, fetching irrelevant alongside useful data, and thus wasting bandwidth and energy.
+However, due to their speculative nature, these techniques can not be accurate, fetching irrelevant alongside useful data, and thus wasting bandwidth, on-chip space and energy.
 
 To enhance accuracy, another class of proposals aims to add some programmability to hardware prefetchers \cite{basak_analysis_2019, talati_prodigy_2021, yang_spzip_2021}.
 Still, this class of prefetchers has limited applicability, as their constrained programming model is only able to cover certain data structures and representations.
 Moreover, programming these prefetchers necessitates the use of a different programming language from the one used to express the application,
 creating a learning barrier that hinders the wider adoption of such proposals.
 
-The primary goal of this study is to propose an accurate prefetching scheme with broader applicability.
-Rather than introducing additional prefetching hardware, our solution aims to increase the utilization of existing idle resources.
-The most important of these resources is the capacity of modern processors for Memory Level Parallelism (MLP),
-which refers to their ability to have multiple concurrent memory requests "in-flight".
+In addition to hardware prefetchers, processor ISAs include specialized instructions to explicitly request data prefetches
+Programmers and compilers can leverage their knowledge of the underlying microarchitecture and an application's access patterns to utilize these instructions.
+This technique, known as software prefetching, has a fundamental limitation:
+the timing of prefetches, as expressed staticaly by a look-ahead distance or the location of a prefetch instruction, is hard to reason about.
+This limitation becomes particularly evident with irregular applications,
+where software prefetching techniques provide modest performance gains \cite{tran_clairvoyance_2017, ainsworth_software_2018}.
 
-At the core of our proposal is a transformation of the application into a pipeline similar to \cite{ham_desc_2015, manocha_graphattack_2021, nguyen_phloem_2023}.
-This transformation is made feasible by re-purposing a well-established compiler optimization technique called Dead Code Elimination (DCE) \cite{cytron_efficiently_1991}.
-In traditional DCE, the compiler slices an application into dead (redundant) and live (essential) code, then discards the redundant portion.
-In our approach, the compiler uses the re-purposed DCE to slice the application into memory and compute slices.
-The memory slices contain the essential code needed to formulate the memory accesses.
-These memory slices are placed in the early stages of the pipeline, designed to maximize MLP as soon as possible.
+A recent wave of proposals aims to provide timely and accurate prefetches for irregular applications that use sparse data structures,
+demonstrating very promising results \cite{manocha_graphattack_2021, nguyen_phloem_2023}.
+Due to the way sparse data structures are represented,
+their traversal exhibits a specific type of irregularity, indirection, typically taking the form \mintinline{C}{A[B[C[i]]]}.
+By decoupling such multi-level indirection into distinct pipeline stages, each stage housing a slice of the application,
+this approach exposes more opportunities for prefetching.
 
-Our proposal aspires to minimize programmer effort, as the burden of transformation is handled by the compiler.
-Moreover, the accuracy and applicability of our technique are assured, as the memory slices are derived from the application itself.
-This results in prefetching that closely matches the actual memory access pattern of the application.
+These proposals represent examples of hardware-software co-design:
+the transformation is enacted by the compiler, and they offer ISA-visible queues for stage-to-stage communication.
+These queues benefit from low-latency hardware implementation as inter-stage communication occurs every few cycles.
+
+The primary aim of this study is to extend these proposals with the following contributions:
+\begin{itemize}
+  
+\item We propose repurposing a well-established compiler optimization technique, Dead Code Elimination (DCE) \cite{cytron_efficiently_1991}, to perform the application partitioning.
+      For generating multiple slices or stages, the partitioning process can be applied recursively.
+
+\item We suggest transforming the application into an arbitrary dataflow network, not merely feed-forward pipelines.
+      This approach would accommodate any dependencies among the slices.
+
+\item To enable the compiler to analyze such transformations, we propose modeling the resulting dataflow network as a Petri net.
+
+\end{itemize}
 
 \section{Background}
 
-1/2 page
+With DCE, the compiler partitions an application into redundant and essential code, and then discards the redundant portion.
+The algorithm maintains a workset of live instructions.
+The workset is initialized with a set of pre-live instructions, such as memory stores, that explicitly modify system state.
+Live instructions are iteratively removed from the workset for control- and data-dependency examination,
+subsequently adding more instructions based on outcome of this examination.
 
-Answer these questions:
-\begin{itemize}
-\item Why do you want to slice the application?
-      To create \textbf{decoupled} (Access/Execute || Supply/Compute || Memory/Compute) threads
-\item How does DCE work, why DCE?
-      Better than (why?) slicing techniques in similar designs \cite{ham_desc_2015}
-\end{itemize}
+With an intermediate representation of a program in static single-assingment form,
+identifying data dependencies is straightforward due to the unambiguous definition of each variable.
+Control dependencies, on the other hand, necessitate a post-dominance analysis on the CFG.
+A live instruction is deemed control-dependent on a conditional statement if the basic block containing the live instruction is part of the post-dominance frontier of the basic block that houses the conditional. 
+In other words, if the live instruction is not always on the path from a conditional to the program's exit, then the conditional should be considered live.
 
-\section{The "new stuff"} 
+DCE can become a versatile slicing technique given the flexibility in redefining the initialization of the workset.
+For our approach, we harness the programmer's insights into the application and invite them to annotate a specific memory access.
+This annotated memory access serves as the initial point of severance, effectively jump-starting the slicing process.
+
+\section{DPREF on BFS} 
 
 2 pages
 
-Answer these questions:
+Demonstrate:
 \begin{itemize}
-\item What is an irregular access pattern?
-      A memory access pattern that exhibits control- and data-dependent memory accesses with poor temporal- or spatial-locallity
-\item Can you demonstrate your approach?
-      I need to find a kernel that demonstrates all 3 types of LoDs (Loss of Decoupling) events \cite{bird_effectiveness_1993}
-      I need to demonstrate the recursive application of DCE.
+\item Our approach on BFS
+\item How the user guides the compiler
+\item The Loss of Decoupling (LoD) \cite{bird_effectiveness_1993} from the RAW on the \mintinline{C}{Frontier}
+\item The recursive application of DCE
+\item How a Petri net can model slices, queues and MLP.
+\item What kind of insights the compiler gets from the Petri net, as it dives into the recursive application of the slicing.
+\item How the compiler terminates the recursion given the feedback from the Petri net.
 \end{itemize}
 
 \section{Preliminary conclusion}
@@ -85,6 +129,12 @@ Answer these questions:
 \item Can you state a preliminary conclusion?
 \item What is next, which challenges do you need to address?
 \end{itemize}
+
+
+\section{Acknowledgement}
+
+This work was partially supported by the Wallenberg AI, Autonomous Systems and Software Program (WASP)
+funded by the Knut and Alice Wallenberg Foundation
 
 \bibliography{references}
 
