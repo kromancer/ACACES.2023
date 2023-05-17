@@ -1,4 +1,73 @@
 
+@article{manocha_graphattack_2021,
+	title = {{GraphAttack}: {Optimizing} {Data} {Supply} for {Graph} {Applications} on {In}-{Order} {Multicore} {Architectures}},
+	volume = {18},
+	issn = {1544-3566, 1544-3973},
+	shorttitle = {{GraphAttack}},
+	url = {https://dl.acm.org/doi/10.1145/3469846},
+	doi = {10.1145/3469846},
+	abstract = {Graph structures are a natural representation of important and pervasive data. While graph applications have significant parallelism, their characteristic pointer indirect loads to neighbor data hinder scalability to large datasets on multicore systems. A scalable and efficient system must tolerate latency while leveraging data parallelism across millions of vertices. Modern Out-of-Order (OoO) cores inherently tolerate a fraction of long latencies, but become clogged when running severely memory-bound applications. Combined with large power/area footprints, this limits their parallel scaling potential and, consequently, the gains that existing software frameworks can achieve. Conversely, accelerator and memory hierarchy designs provide performant hardware specializations, but cannot support diverse application demands.
+            To address these shortcomings, we present GraphAttack, a hardware-software data supply approach that accelerates graph applications on in-order multicore architectures. GraphAttack proposes compiler passes to (1) identify idiomatic long-latency loads and (2) slice programs along these loads into data Producer/ Consumer threads to map onto pairs of parallel cores. Each pair shares a communication queue; the Producer asynchronously issues long-latency loads, whose results are buffered in the queue and used by the Consumer. This scheme drastically increases memory-level parallelism (MLP) to mitigate latency bottlenecks. In equal-area comparisons, GraphAttack outperforms OoO cores, do-all parallelism, prefetching, and prior decoupling approaches, achieving a 2.87× speedup and 8.61× gain in energy efficiency across a range of graph applications. These improvements scale; GraphAttack achieves a 3× speedup over 64 parallel cores. Lastly, it has pragmatic design principles; it enhances in-order architectures that are gaining increasing open-source support.},
+	language = {en},
+	number = {4},
+	urldate = {2023-01-25},
+	journal = {ACM Transactions on Architecture and Code Optimization},
+	author = {Manocha, Aninda and Sorensen, Tyler and Tureci, Esin and Matthews, Opeoluwa and Aragon, Juan L. and Martonosi, Margaret},
+	month = dec,
+	year = {2021},
+	keywords = {not-cache(com queues), not-reactive, run-ahead},
+	pages = {1--26},
+}
+
+@inproceedings{ham_desc_2015,
+	address = {Waikiki Hawaii},
+	title = {{DeSC}: decoupled supply-compute communication management for heterogeneous architectures},
+	isbn = {978-1-4503-4034-2},
+	shorttitle = {{DeSC}},
+	url = {https://dl.acm.org/doi/10.1145/2830772.2830800},
+	doi = {10.1145/2830772.2830800},
+	language = {en},
+	urldate = {2023-02-02},
+	booktitle = {Proceedings of the 48th {International} {Symposium} on {Microarchitecture}},
+	publisher = {ACM},
+	author = {Ham, Tae Jun and Aragon, Juan L. and Martonosi, Margaret},
+	month = dec,
+	year = {2015},
+	keywords = {not-cache(com queues), not-reactive, run-ahead},
+	pages = {191--203},
+}
+
+@inproceedings{luk_compiler-based_1996,
+	address = {Cambridge, Massachusetts, United States},
+	title = {Compiler-based prefetching for recursive data structures},
+	isbn = {978-0-89791-767-4},
+	url = {http://portal.acm.org/citation.cfm?doid=237090.237190},
+	doi = {10.1145/237090.237190},
+	language = {en},
+	urldate = {2023-04-26},
+	booktitle = {Proceedings of the seventh international conference on {Architectural} support for programming languages and operating systems  - {ASPLOS}-{VII}},
+	publisher = {ACM Press},
+	author = {Luk, Chi-Keung and Mowry, Todd C.},
+	year = {1996},
+	pages = {222--233},
+}
+
+@article{weiser_program_1984,
+	title = {Program {Slicing}},
+	volume = {SE-10},
+	issn = {0098-5589},
+	url = {http://ieeexplore.ieee.org/document/5010248/},
+	doi = {10.1109/TSE.1984.5010248},
+	number = {4},
+	urldate = {2023-04-25},
+	journal = {IEEE Transactions on Software Engineering},
+	author = {Weiser, Mark},
+	month = jul,
+	year = {1984},
+	keywords = {next},
+	pages = {352--357},
+}
+
 @inproceedings{bird_effectiveness_1993,
 	address = {Tokyo Japan},
 	title = {The effectiveness of decoupling},
@@ -33,24 +102,6 @@
 	pages = {114--123},
 }
 
-@inproceedings{ham_desc_2015,
-	address = {Waikiki Hawaii},
-	title = {{DeSC}: decoupled supply-compute communication management for heterogeneous architectures},
-	isbn = {978-1-4503-4034-2},
-	shorttitle = {{DeSC}},
-	url = {https://dl.acm.org/doi/10.1145/2830772.2830800},
-	doi = {10.1145/2830772.2830800},
-	language = {en},
-	urldate = {2023-02-02},
-	booktitle = {Proceedings of the 48th {International} {Symposium} on {Microarchitecture}},
-	publisher = {ACM},
-	author = {Ham, Tae Jun and Aragón, Juan L. and Martonosi, Margaret},
-	month = dec,
-	year = {2015},
-	keywords = {not-cache(com queues), not-reactive, run-ahead},
-	pages = {191--203},
-}
-
 @incollection{lengauer_limitation_1997,
 	address = {Berlin, Heidelberg},
 	title = {A limitation study into access decoupling},
@@ -67,21 +118,6 @@
 	doi = {10.1007/BFb0002859},
 	note = {Series Title: Lecture Notes in Computer Science},
 	pages = {1102--1111},
-}
-
-@article{weiser_program_1984,
-	title = {Program {Slicing}},
-	volume = {SE-10},
-	issn = {0098-5589},
-	url = {http://ieeexplore.ieee.org/document/5010248/},
-	doi = {10.1109/TSE.1984.5010248},
-	number = {4},
-	urldate = {2023-04-25},
-	journal = {IEEE Transactions on Software Engineering},
-	author = {Weiser, Mark},
-	month = jul,
-	year = {1984},
-	pages = {352--357},
 }
 
 @inproceedings{jimborean_fix_2014,
@@ -496,26 +532,6 @@ depth-first search and an efficient method of computing functions defined on pat
 	year = {2020},
 	keywords = {not-cache(com queues), not-reactive, run-ahead},
 	pages = {596--608},
-}
-
-@article{manocha_graphattack_2021,
-	title = {{GraphAttack}: {Optimizing} {Data} {Supply} for {Graph} {Applications} on {In}-{Order} {Multicore} {Architectures}},
-	volume = {18},
-	issn = {1544-3566, 1544-3973},
-	shorttitle = {{GraphAttack}},
-	url = {https://dl.acm.org/doi/10.1145/3469846},
-	doi = {10.1145/3469846},
-	abstract = {Graph structures are a natural representation of important and pervasive data. While graph applications have significant parallelism, their characteristic pointer indirect loads to neighbor data hinder scalability to large datasets on multicore systems. A scalable and efficient system must tolerate latency while leveraging data parallelism across millions of vertices. Modern Out-of-Order (OoO) cores inherently tolerate a fraction of long latencies, but become clogged when running severely memory-bound applications. Combined with large power/area footprints, this limits their parallel scaling potential and, consequently, the gains that existing software frameworks can achieve. Conversely, accelerator and memory hierarchy designs provide performant hardware specializations, but cannot support diverse application demands.
-            To address these shortcomings, we present GraphAttack, a hardware-software data supply approach that accelerates graph applications on in-order multicore architectures. GraphAttack proposes compiler passes to (1) identify idiomatic long-latency loads and (2) slice programs along these loads into data Producer/ Consumer threads to map onto pairs of parallel cores. Each pair shares a communication queue; the Producer asynchronously issues long-latency loads, whose results are buffered in the queue and used by the Consumer. This scheme drastically increases memory-level parallelism (MLP) to mitigate latency bottlenecks. In equal-area comparisons, GraphAttack outperforms OoO cores, do-all parallelism, prefetching, and prior decoupling approaches, achieving a 2.87× speedup and 8.61× gain in energy efficiency across a range of graph applications. These improvements scale; GraphAttack achieves a 3× speedup over 64 parallel cores. Lastly, it has pragmatic design principles; it enhances in-order architectures that are gaining increasing open-source support.},
-	language = {en},
-	number = {4},
-	urldate = {2023-01-25},
-	journal = {ACM Transactions on Architecture and Code Optimization},
-	author = {Manocha, Aninda and Sorensen, Tyler and Tureci, Esin and Matthews, Opeoluwa and Aragón, Juan L. and Martonosi, Margaret},
-	month = dec,
-	year = {2021},
-	keywords = {not-cache(com queues), not-reactive, run-ahead},
-	pages = {1--26},
 }
 
 @inproceedings{yang_spzip_2021,
@@ -1328,12 +1344,12 @@ Version Number: 4},
 	author = {Sotiropoulos, Konstantinos},
 }
 
-@unpublished{sotiropoulos_2022_nodate-12,
+@unpublished{sotiropoulos_2022_nodate,
 	title = {2022 w36},
 	author = {Sotiropoulos, Konstantinos},
 }
 
-@unpublished{sotiropoulos_2022_nodate,
+@unpublished{sotiropoulos_2022_nodate-1,
 	title = {2022 w35},
 	author = {Sotiropoulos, Konstantinos},
 }
