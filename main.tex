@@ -66,25 +66,6 @@ Irregular memory accesses pose a significant challenge in applications within gr
 These applications experience high execution times due to frequent stalls caused by long latency DRAM accesses.
 Prefetching is a latency avoidance technique that aims to bring useful data closer to the processor before it is requested.
 
-Processors are equipped with dedicated hardware prefetchers that predict future accesses and do so transparently, without requiring any software intervention.
-These prefetchers are efficient for applications with regular access patterns, such as iterating over a dense matrix.
-Nonetheless, they struggle with indirect memory accesses, like those encountered when traversing a sparse graph.
-
-There have been several proposals to improve the predictive capabilities of hardware prefetchers e.g. with the application of machine learning \cite{bera_pythia_2021}.
-However, due to their speculative nature, these techniques can not be accurate, fetching irrelevant alongside useful data, and thus wasting bandwidth, on-chip space and energy.
-
-To enhance accuracy, another class of proposals aims to add some programmability to hardware prefetchers \cite{talati_prodigy_2021}.
-Still, this class of prefetchers has limited applicability, as their constrained programming model is only able to cover certain data structures and representations.
-Moreover, programming these prefetchers necessitates the use of a different programming language from the one used to express the application,
-creating a learning barrier that hinders the wider adoption of such proposals.
-
-In addition to hardware prefetchers, processor ISAs include specialized instructions to explicitly request data prefetches
-Programmers and compilers can leverage their knowledge of the underlying microarchitecture and an application's access patterns to utilize these instructions.
-This technique, known as software prefetching, has a fundamental limitation:
-the timing of prefetches, as expressed staticaly by a look-ahead distance or the location of a prefetch instruction, is hard to reason about.
-This limitation becomes particularly evident with irregular applications,
-where software prefetching techniques provide modest performance gains \cite{ainsworth_software_2018}.
-
 A recent wave of proposals aims to provide timely and accurate prefetches for irregular applications that use sparse data structures,
 demonstrating very promising results \cite{manocha_graphattack_2021, Nguyen2023}.
 Due to the way sparse data structures are represented,
