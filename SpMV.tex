@@ -1,0 +1,32 @@
+\begin{lstlisting}[style=cppcode]
+  #pragma dpref indirection(Values[Offsets], X[ColIdx[Offsets]])
+  void SpMV(const double * __restrict Values,
+            const size_t * __restrict Offsets,
+            const size_t * __restrict ColIdx,
+            const double * __restrict X,
+            double * __restrict Y) {
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{yellow!15}, firstnumber=last]
+    for (size_t I = 0; I < N; I++) {
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+      Y[I] = 0;
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{green!15}, firstnumber=last]
+      for (size_t J = Offsets[I]; J < Offsets[I + 1]; J++)
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+        Y[I] += Values[J] * X[ColIdx[J]];
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{yellow!15}, firstnumber=last]
+    }
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, firstnumber=last]
+  }
+\end{lstlisting}\vspace{-\baselineskip}

@@ -1,10 +1,26 @@
 \documentclass{acaces}
 
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{subcaption}
 \usepackage{minted}
+
+\lstdefinestyle{cppcode}{
+    language=C++,
+    basicstyle=\footnotesize\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{purple},
+    frame=none,
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    numbersep=5pt
+}
 
 \begin{document}
 
-\title{DPREF: Using Dead Code Elimination for Prefetching Irregular Memory Accesses}
+\title{DPREF: Decoupling using Dead Code Elimination for Prefetching Irregular Memory Accesses}
 
 \author{
 Konstantinos~Sotiropoulos\addressnum{1}\comma\extranum{1},
@@ -32,10 +48,17 @@ Per~Stenstr\"{o}m\addressnum{1}\comma\extranum{1}
 \pagestyle{empty}
 
 \begin{abstract}
-  This is a work in progress.
+
+  Decoupling refers to the act of slicing a single instruction stream into separate memory accessing and computation streams,
+  and arranging them in a dataflow manner.
+  As these instruction streams gain a certain level of autonomy, decoupling can serve as a means to achieve accurate and timely prefetching.
+
+  This research aims to advance previous works on compile-time decoupling by proposing a systematic approach to slicing.
+  The ultimate goal is to broaden the applicability to a wider range of irregular applications that existing methods struggle to address. \\
+
 \end{abstract}
 
-\keywords{irregular applications; prefetching; pipeline parallelism; DCE}
+\keywords{irregular applications; decoupling; slicing; prefetching; DCE}
 
 \section{Introduction}
 
@@ -50,7 +73,7 @@ Nonetheless, they struggle with indirect memory accesses, like those encountered
 There have been several proposals to improve the predictive capabilities of hardware prefetchers e.g. with the application of machine learning \cite{bera_pythia_2021}.
 However, due to their speculative nature, these techniques can not be accurate, fetching irrelevant alongside useful data, and thus wasting bandwidth, on-chip space and energy.
 
-To enhance accuracy, another class of proposals aims to add some programmability to hardware prefetchers \cite{basak_analysis_2019, talati_prodigy_2021, yang_spzip_2021}.
+To enhance accuracy, another class of proposals aims to add some programmability to hardware prefetchers \cite{talati_prodigy_2021}.
 Still, this class of prefetchers has limited applicability, as their constrained programming model is only able to cover certain data structures and representations.
 Moreover, programming these prefetchers necessitates the use of a different programming language from the one used to express the application,
 creating a learning barrier that hinders the wider adoption of such proposals.
@@ -60,33 +83,22 @@ Programmers and compilers can leverage their knowledge of the underlying microar
 This technique, known as software prefetching, has a fundamental limitation:
 the timing of prefetches, as expressed staticaly by a look-ahead distance or the location of a prefetch instruction, is hard to reason about.
 This limitation becomes particularly evident with irregular applications,
-where software prefetching techniques provide modest performance gains \cite{tran_clairvoyance_2017, ainsworth_software_2018}.
+where software prefetching techniques provide modest performance gains \cite{ainsworth_software_2018}.
 
 A recent wave of proposals aims to provide timely and accurate prefetches for irregular applications that use sparse data structures,
-demonstrating very promising results \cite{manocha_graphattack_2021, nguyen_phloem_2023}.
+demonstrating very promising results \cite{manocha_graphattack_2021, Nguyen2023}.
 Due to the way sparse data structures are represented,
 their traversal exhibits a specific type of irregularity, indirection, typically taking the form \mintinline{C}{A[B[C[i]]]}.
-By decoupling such multi-level indirection into distinct pipeline stages, each stage housing a slice of the application,
-this approach exposes more opportunities for prefetching.
+The key idea behind these proposals is to decouple such multi-level indirection into distinct pipeline stages, each housing a slice of the application
 
 These proposals represent examples of hardware-software co-design:
-the transformation is enacted by the compiler, and they offer ISA-visible queues for stage-to-stage communication.
+the decoupling is enacted by the compiler, and they offer ISA-visible queues for stage-to-stage communication.
 These queues benefit from low-latency hardware implementation as inter-stage communication occurs every few cycles.
 
-The primary aim of this study is to extend these proposals with the following contributions:
-\begin{itemize}
-  
-\item We propose repurposing a well-established compiler optimization technique, Dead Code Elimination (DCE) \cite{cytron_efficiently_1991}, to perform the application partitioning.
-      For generating multiple slices or stages, the partitioning process can be applied recursively.
+The primary purpose of this study is to extend these proposals through a more systematic compiler slicing technique, utilizing an established optimization technique called Dead Code Elimination (DCE) \cite{cytron_efficiently_1991}.
+This approach aims to handle a wider range of applications, offering more flexibility in the decoupling process.
 
-\item We suggest transforming the application into an arbitrary dataflow network, not merely feed-forward pipelines.
-      This approach would accommodate any dependencies among the slices.
-
-\item To enable the compiler to analyze such transformations, we propose modeling the resulting dataflow network as a Petri net.
-
-\end{itemize}
-
-\section{Background}
+\section{DCE for Slicing}
 
 With DCE, the compiler partitions an application into redundant and essential code, and then discards the redundant portion.
 The algorithm maintains a workset of live instructions.
@@ -94,48 +106,84 @@ The workset is initialized with a set of pre-live instructions, such as memory s
 Live instructions are iteratively removed from the workset for control- and data-dependency examination,
 subsequently adding more instructions based on outcome of this examination.
 
-With an intermediate representation of a program in static single-assingment form,
+With an intermediate representation of a program in Static Single-Assingment (SSA) form,
 identifying data dependencies is straightforward due to the unambiguous definition of each variable.
 Control dependencies, on the other hand, necessitate a post-dominance analysis on the CFG.
-A live instruction is deemed control-dependent on a conditional statement if the basic block containing the live instruction is part of the post-dominance frontier of the basic block that houses the conditional. 
+A live instruction is deemed control-dependent on a conditional statement
+if the basic block containing the live instruction is part of the post-dominance frontier of the basic block that houses the conditional.
 In other words, if the live instruction is not always on the path from a conditional to the program's exit, then the conditional should be considered live.
 
-DCE can become a versatile slicing technique given the flexibility in redefining the initialization of the workset.
-For our approach, we harness the programmer's insights into the application and invite them to annotate a specific memory access.
-This annotated memory access serves as the initial point of severance, effectively jump-starting the slicing process.
+DCE can evolve into a flexible slicing technique through redefining what is considered as a pre-live instruction.
+The redundant portion is not discarded; instead, it undergoes a dependency examination, similar to pre-live code, and subsequently forms one of the two slices, the other being the pre-live instructions and their dependencies.
+This slicing process can then be systematically and recursively applied.
 
-\section{DPREF on BFS} 
+The identification of pre-live instructions is central to the programmer/compiler interface design,
+potentially facilitated by annotations, as discussed in the upcoming section,
+and proves critical in kickstarting the slicing process.
 
-2 pages
+\section{DPREF on SpMV}
 
-Demonstrate:
-\begin{itemize}
-\item Our approach on BFS
-\item How the user guides the compiler
-\item The Loss of Decoupling (LoD) \cite{bird_effectiveness_1993} from the RAW on the \mintinline{C}{Frontier}
-\item The recursive application of DCE
-\item How a Petri net can model slices, queues and MLP.
-\item What kind of insights the compiler gets from the Petri net, as it dives into the recursive application of the slicing.
-\item How the compiler terminates the recursion given the feedback from the Petri net.
-\end{itemize}
+Figure \ref{fig:spmv} demonstrates the the product y = Ax of a sparse matrix A and a dense vector x (SpMV) where A is stored in Compressed Sparse Row (CSR) format.
+Array \mintinline{C++}{Values} stores all non-zero values of the matrix and array \mintinline{C++}{ColIdx} stores the column index of each non-zero value.
+The \mintinline{C++}{Offsets} array denotes the start index of each row in the \mintinline{C++}{Values} and \mintinline{C++}{ColIdx} arrays.
+For instance, the non-zero values of row \mintinline{C++}{n} in the \mintinline{C++}{Values} arrays start at index \mintinline{C++}{Offsets[n]}
+and end just before index \mintinline{C++}{Offsets[n+1]}.
 
-\section{Preliminary conclusion}
+The \mintinline{C++}{pragma} directive in line (1) explicitly denotes this relationship among the arrays.
+The compiler leverages this annotation to mark as pre-live the instructions that use \mintinline{C++}{Values} and \mintinline{C++}{X},
+while deliberately excluding their indices from the dependency analysis.
+This marks the beginning of the first slicing phase.
 
-1/2 page
+Figure \ref{fig:firstSlice} is the slice that corresponds to the dead code.
+Notice how the queue is used to convey tokens that can represent either data or control flow information.
+Figure \ref{fig:secondSlice} is the slice that corresponds to the live code.
+Notice how the token popped from the queue is first examined for control flow information.
 
-Answer these questions:
-\begin{itemize}
-\item Can you state a preliminary conclusion?
-\item What is next, which challenges do you need to address?
-\end{itemize}
+\begin{figure}[htbp]
+  \centering
+  \input{SpMV.tex}
+  \caption{SpMV, before slicing. Shaded in red is exclusively live code, shaded in green is exclusively dead code, and code in yellow is common to both. }
+  \label{fig:spmv}
+\end{figure}
 
+\begin{figure}[ht]
+  \centering
+
+  \begin{subfigure}{0.8\textwidth}
+    \centering
+    \input{firstSlice.tex}
+    \caption{The first slice corresponding to the dead code}
+    \label{fig:firstSlice}
+  \end{subfigure}
+
+  \begin{subfigure}{0.8\textwidth}
+    \centering
+    \input{secondSlice.tex}
+    \caption{The second slice corresponding to the live code}
+    \label{fig:secondSlice}
+  \end{subfigure}
+
+\end{figure}
+
+\section{Preliminary Conclusion}
+
+Our work is currently in progress, exploring the viability of our proposed approach through manual application slicing.
+Our study extends beyond the SpMV algorithm, including applications like breadth-first search, PageRank, and Hash Join.
+Three primary challenges have emerged from our findings thus far.
+
+First, for algorithms that are not as straightforwardly decouplable as SpMV, and which encompass feedback loops, it's essential for the compiler to discern and reason about critical system properties, such as deadlock.
+Modeling the system as a Petri net within the compiler might offer a viable solution to this issue.
+
+Second, when a feedback loop exists between the first and final slice, a distributed termination solution is required.
+Specifically, the first slice needs to determine when all queues are empty and all slices are inactive so that the termination token can be injected \cite{Dijkstra1983}.
+
+Lastly, the microarchitecture of the processor, apart from facilitating quick push/pop operations, must also handle the overhead associated with checking for control flow tokens.
 
 \section{Acknowledgement}
 
 This work was partially supported by the Wallenberg AI, Autonomous Systems and Software Program (WASP)
-funded by the Knut and Alice Wallenberg Foundation
+funded by the Knut and Alice Wallenberg Foundation.
 
-\bibliography{references}
+\bibliography{main}
 
 \end{document}
-

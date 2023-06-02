@@ -1,0 +1,42 @@
+\begin{lstlisting}[style=cppcode]
+void secondSlice(const size_t N,
+                 const double *__restrict X,
+                 double *__restrict Y,
+                 dpref::Queue<tuple<double, size_t>> *Q) {
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{yellow!15}, firstnumber=last]
+  for (size_t I = 0; I < N; I++) {
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+    Y[I] = 0;
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, firstnumber=last]
+    for (;;) {
+      auto Token = Q->pop();
+      if (Token.isTerminationToken()) {
+        return;
+      }
+      if (Token.isLoopTerminationToken()) {
+        break;
+      }
+      auto [MVal, ColIdx] = Token.getData();
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+      Y[I] += MVal * X[ColIdx];
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, firstnumber=last]
+    }
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{yellow!15}, firstnumber=last]
+  }
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, firstnumber=last]
+}
+\end{lstlisting}\vspace{-\baselineskip}

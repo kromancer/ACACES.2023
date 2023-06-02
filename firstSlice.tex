@@ -1,0 +1,29 @@
+\begin{lstlisting}[style=cppcode]
+void firstSlice(const size_t *__restrict Offsets,
+                const size_t *__restrict ColIdx,
+                const double *__restrict Values,
+                dpref::Queue<tuple<double, size_t>> *Q) {
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{yellow!15}, firstnumber=last]
+  for (size_t I = 0; I < N; I++) {
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{green!15}, firstnumber=last]
+    for (size_t J = Offsets[I]; J < Offsets[I + 1]; J++) {
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, firstnumber=last]
+      Q->push(make_tuple(Values[J], ColIdx[J]));
+    }
+    Q->pushLoopTerminationToken();
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{yellow!15}, firstnumber=last]
+  }
+\end{lstlisting}\vspace{-\baselineskip}
+
+\begin{lstlisting}[style=cppcode, firstnumber=last]
+  Q->pushTerminationToken();
+}
+\end{lstlisting}\vspace{-\baselineskip}
