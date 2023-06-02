@@ -1,9 +1,7 @@
 \begin{lstlisting}[style=cppcode]
   #pragma dpref indirection(Values[Offsets], X[ColIdx[Offsets]])
-  void SpMV(const double * __restrict Values,
-            const size_t * __restrict Offsets,
-            const size_t * __restrict ColIdx,
-            const double * __restrict X,
+  void SpMV(const double * __restrict Values, const size_t * __restrict Offsets,
+            const size_t * __restrict ColIdx, const double * __restrict X,
             double * __restrict Y) {
 \end{lstlisting}\vspace{-\baselineskip}
 

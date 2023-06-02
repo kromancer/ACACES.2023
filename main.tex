@@ -139,7 +139,7 @@ Notice how the queue is used to convey tokens that can represent either data or 
 Figure \ref{fig:secondSlice} is the slice that corresponds to the live code.
 Notice how the token popped from the queue is first examined for control flow information.
 
-\begin{figure}[htbp]
+\begin{figure}[ht]
   \centering
   \input{SpMV.tex}
   \caption{SpMV, before slicing. Shaded in red is exclusively live code, shaded in green is exclusively dead code, and code in yellow is common to both. }
@@ -149,14 +149,14 @@ Notice how the token popped from the queue is first examined for control flow in
 \begin{figure}[ht]
   \centering
 
-  \begin{subfigure}{0.8\textwidth}
+  \begin{subfigure}{1.0\textwidth}
     \centering
     \input{firstSlice.tex}
     \caption{The first slice corresponding to the dead code}
     \label{fig:firstSlice}
   \end{subfigure}
 
-  \begin{subfigure}{0.8\textwidth}
+  \begin{subfigure}{1.0\textwidth}
     \centering
     \input{secondSlice.tex}
     \caption{The second slice corresponding to the live code}
