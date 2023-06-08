@@ -78,10 +78,10 @@ Still, this class of prefetchers has limited applicability, as their constrained
 Moreover, programming these prefetchers necessitates the use of a different programming language from the one used to express the application,
 creating a learning barrier that hinders the wider adoption of such proposals.
 
-In addition to hardware prefetchers, processor ISAs include specialized instructions to explicitly request data prefetches
+In addition to hardware prefetchers, processor ISAs include specialized instructions to explicitly request data prefetches.
 Programmers and compilers can leverage their knowledge of the underlying microarchitecture and an application's access patterns to utilize these instructions.
 This technique, known as software prefetching, has a fundamental limitation:
-the timing of prefetches, as expressed staticaly by a look-ahead distance or the location of a prefetch instruction, is hard to reason about.
+the timing of prefetches, as expressed statically by a look-ahead distance or the location of a prefetch instruction, is hard to reason about.
 This limitation becomes particularly evident with irregular applications,
 where software prefetching techniques provide modest performance gains \cite{ainsworth_software_2018}.
 
@@ -89,7 +89,7 @@ A recent wave of proposals aims to provide timely and accurate prefetches for ir
 demonstrating very promising results \cite{manocha_graphattack_2021, Nguyen2023}.
 Due to the way sparse data structures are represented,
 their traversal exhibits a specific type of irregularity, indirection, typically taking the form \mintinline{C}{A[B[C[i]]]}.
-The key idea behind these proposals is to decouple such multi-level indirection into distinct pipeline stages, each housing a slice of the application
+The key idea behind these proposals is to decouple such multi-level indirection into distinct pipeline stages, each housing a slice of the application.
 
 These proposals represent examples of hardware-software co-design:
 the decoupling is enacted by the compiler, and they offer ISA-visible queues for stage-to-stage communication.
