@@ -9,15 +9,15 @@
     for (size_t I = 0; I < N; I++) {
 \end{lstlisting}\vspace{-\baselineskip}
 
-\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{green!15}, firstnumber=last]
       Y[I] = 0;
 \end{lstlisting}\vspace{-\baselineskip}
 
-\begin{lstlisting}[style=cppcode, backgroundcolor=\color{green!15}, firstnumber=last]
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
       for (size_t J = Offsets[I]; J < Offsets[I + 1]; J++)
 \end{lstlisting}\vspace{-\baselineskip}
 
-\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{green!15}, firstnumber=last]
         Y[I] += Values[J] * X[ColIdx[J]];
 \end{lstlisting}\vspace{-\baselineskip}
 

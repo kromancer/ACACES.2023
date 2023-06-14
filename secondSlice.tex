@@ -7,7 +7,7 @@ void secondSlice(const double *__restrict X, double *__restrict Y,
   for (size_t I = 0; I < N; I++) {
 \end{lstlisting}\vspace{-\baselineskip}
 
-\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{green!15}, firstnumber=last]
     Y[I] = 0;
 \end{lstlisting}\vspace{-\baselineskip}
 
@@ -23,7 +23,7 @@ void secondSlice(const double *__restrict X, double *__restrict Y,
       auto [MVal, ColIdx] = Token.getData();
 \end{lstlisting}\vspace{-\baselineskip}
 
-\begin{lstlisting}[style=cppcode, backgroundcolor=\color{red!15}, firstnumber=last]
+\begin{lstlisting}[style=cppcode, backgroundcolor=\color{green!15}, firstnumber=last]
       Y[I] += MVal * X[ColIdx];
 \end{lstlisting}\vspace{-\baselineskip}
 
