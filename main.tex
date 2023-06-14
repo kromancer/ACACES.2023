@@ -75,10 +75,6 @@ Due to the way sparse data structures are represented,
 their traversal exhibits a specific type of irregularity, indirection, typically taking the form \mintinline{C}{A[B[C[i]]]}.
 The key idea behind these proposals is to decouple such multi-level indirection into distinct pipeline stages, each housing a slice of the application.
 
-These proposals represent examples of hardware-software co-design:
-the decoupling is enacted by the compiler, and they offer ISA-visible queues for stage-to-stage communication.
-These queues benefit from low-latency hardware implementation as inter-stage communication occurs every few cycles.
-
 Despite their promising results, these existing proposals face limitations due to their slicing methods.
 Either they can produce only a restricted number of slices, as in \cite{Manocha2021},
 or they can only slice applications that can be arranged as feed-forward pipelines, as in \cite{Nguyen2023}.

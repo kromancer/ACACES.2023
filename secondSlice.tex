@@ -14,12 +14,8 @@ void secondSlice(const double *__restrict X, double *__restrict Y,
 \begin{lstlisting}[style=cppcode, firstnumber=last]
     for (;;) {
       auto Token = Q->pop();
-      if (Token.isTerminationToken()) {
-        return;
-      }
-      if (Token.isLoopTerminationToken()) {
-        break;
-      }
+      if (Token.isTerminationToken()) return;
+      if (Token.isLoopTerminationToken()) break;
       auto [MVal, ColIdx] = Token.getData();
 \end{lstlisting}\vspace{-\baselineskip}
 
