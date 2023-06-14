@@ -133,7 +133,7 @@ as will be discussed in the upcoming section.
 
 \section{DPREF on Sparse Matrix-Vector Multiplication}
 
-Figure \ref{fig:spmv} demonstrates the the product y = Ax of a sparse matrix A and a dense vector x (SpMV) where A is stored in Compressed Sparse Row (CSR) format.
+Figure \ref{fig:spmv} demonstrates the product y = Ax of a sparse matrix A and a dense vector x (SpMV) where A is stored in Compressed Sparse Row (CSR) format.
 Array \mintinline{C++}{Values} stores all non-zero values of the matrix and array \mintinline{C++}{ColIdx} stores the column index of each non-zero value.
 The \mintinline{C++}{Offsets} array denotes the start index of each row in the \mintinline{C++}{Values} and \mintinline{C++}{ColIdx} arrays.
 For instance, the non-zero values of row \mintinline{C++}{n} in the \mintinline{C++}{Values} arrays start at index \mintinline{C++}{Offsets[n]}
